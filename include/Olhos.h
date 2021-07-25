@@ -1,5 +1,3 @@
-#include <Arduino.h>
-
 #pragma once
 
 #define GUHEBD_BMPWIDTH  128

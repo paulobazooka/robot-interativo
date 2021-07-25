@@ -228,3 +228,59 @@ void Display::feliz()
     display->display();
     delay(1500);
 }
+
+/*
+*   SIM
+*/
+void Display::sim(){
+    for (byte i = 0; i < 5; i++)
+    {
+        display->clearDisplay();
+        display->drawBitmap(0, 0, OLHOS_CENTRO, 128, 64, WHITE);
+        display->display();
+        delay(_DELAY);
+
+        display->clearDisplay();
+        display->drawBitmap(0, 10, OLHOS_CENTRO, 128, 64, WHITE);
+        display->display();
+        delay(_DELAY);
+
+        display->clearDisplay();
+        display->drawBitmap(0, 0, OLHOS_CENTRO, 128, 64, WHITE);
+        display->display();
+        delay(_DELAY);
+
+        display->clearDisplay();
+        display->drawBitmap(0, -10, OLHOS_CENTRO, 128, 64, WHITE);
+        display->display();
+        delay(_DELAY);
+    }
+}
+
+/*
+*   NÃO
+*/
+void Display::nao(){
+     for (byte i = 0; i < 5; i++)
+    {
+        display->clearDisplay();
+        display->drawBitmap(0, 0, OLHOS_CENTRO, 128, 64, WHITE);
+        display->display();
+        delay(_DELAY2);
+
+        display->clearDisplay();
+        display->drawBitmap(15, 0, OLHOS_CENTRO, 128, 64, WHITE);
+        display->display();
+        delay(_DELAY2);
+
+        display->clearDisplay();
+        display->drawBitmap(0, 0, OLHOS_CENTRO, 128, 64, WHITE);
+        display->display();
+        delay(_DELAY2);
+
+        display->clearDisplay();
+        display->drawBitmap(-15, 0, OLHOS_CENTRO, 128, 64, WHITE);
+        display->display();
+        delay(_DELAY2);        
+    }
+}

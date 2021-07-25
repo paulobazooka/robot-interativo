@@ -15,11 +15,15 @@ class Display
 private:
     Adafruit_SSD1306 *display;
     unsigned int DELAY = 330;
+    unsigned int _DELAY = 35;
+    unsigned int _DELAY2 = 30;
 public:
     Display(Adafruit_SSD1306 *d);
     Display();
     ~Display();
 
+    void sim();
+    void nao();
     void show();
     void feliz();
     void brava();

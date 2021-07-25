@@ -1,5 +1,3 @@
-#include <Arduino.h>
-
 #pragma once
 
 #define EH620D_BMPWIDTH  128
