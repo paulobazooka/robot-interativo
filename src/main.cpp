@@ -1,8 +1,9 @@
 #include <Arduino.h>
+#include <avr/interrupt.h>
 
-#include <avr/sleep.h>
 #include "Display.h"
-
+#include "GerenciadorSono.h"
+#include "Interrupcao.h"
 
 // Definições -------------------------
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -35,6 +36,8 @@ boolean deep_sleep = false;
 // Objetos ----------------------------
 Adafruit_SSD1306 d(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 Display display;
+GerenciadorSono mestreDosSonhos;
+Interrupcao interrupcao;
 
 // Declaração de funções --------------
 void lerSensores();
@@ -42,7 +45,6 @@ void medirTensao();
 void acordado();
 void dormindo();
 void sonolento();
-void configuracaoTimer();
 void responderPergunta();
 void sonoProfundo();
 
@@ -51,23 +53,27 @@ void setup()
 {
   Serial.begin(9600);
 
-  //pinMode(PINO_INTERRUPCAO, INPUT_PULLUP);
+  interrupcao.configurarInterrupcaoTimer();
+  interrupcao.habilitarInterrupcaoTimer();
+
+  interrupcao.configurarInterrupcaoExterna();
+  interrupcao.habilitarInterrupcaoExterna();
+
+  interrupcao.configurarInterrupcaoWatchDog();
+
   analogReference(INTERNAL);
-  configuracaoTimer();
-  // attachInterrupt(digitalPinToInterrupt(PINO_INTERRUPCAO), responderPergunta, LOW);
+
   display = Display(&d);
   display.displayON();
-  display.reduzirBrilho(true);
+  display.reduzirBrilho(false);
   display.limpar();
   display.show();
 }
 
 void loop()
 {
-  display.acordada();
-
   /* if (batteryStatus == BATTERY_DANGER)
-    sonoProfundo();
+    sonoProfundo();*/
 
   while (batteryStatus == BATTERY_LOW)
     display.bateriaFraca();
@@ -77,8 +83,12 @@ void loop()
     if (!claro)
     {
       display.sonolenta();
+      display.reduzirBrilho(true);
       while (!claro && batteryStatus == BATTERY_HIGH)
         display.dormindo();
+
+      display.sonolenta();
+      display.reduzirBrilho(false);
     }
 
     while (claro && batteryStatus == BATTERY_HIGH && perguntou == false)
@@ -98,7 +108,7 @@ void loop()
         display.acordada();
         break;
       case 4:
-         display.feliz();
+        display.feliz();
         break;
       case 5:
         display.feliz();
@@ -119,23 +129,23 @@ void loop()
         display.piscada();
         break;
       case 11:
-         display.piscada();
+        display.piscada();
         break;
       default:
         break;
       }
-    }*/
+    }
 
-   /* if (perguntou)
+    if (perguntou)
     {
       perguntou = false;
       byte op = random(0, 2);
       if (op == 1)
-        respostaSIM(&display);
+        display.sim();
       else
-        respostaNAO(&display);
+        display.nao();
     }
-  }*/
+  }
 }
 
 void lerSensores()
@@ -149,57 +159,64 @@ void lerSensores()
     claro = true;
 }
 
-void configuracaoTimer()
+
+// Rotina de interrupção do watchdog
+ISR(WDT_vect)
 {
-  // Configuração do timer1
-  TCCR1A = 0;                          //confira timer para operação normal pinos OC1A e OC1B desconectados
-  TCCR1B = 0;                          //limpa registrador
-  TCCR1B |= (1 << CS10) | (1 << CS12); // configura prescaler para 1024: CS12 = 1 e CS10 = 1
-
-  TCNT1 = 0xC2F7; // incia timer com valor para que estouro ocorra em 1 segundo
-                  // 65536-(16MHz/1024/1Hz) = 49911 = 0xC2F7
-
-  TIMSK1 |= (1 << TOIE1); // habilita a interrupção do TIMER1
+  wdt_reset();  // reset do WatchDog
 }
 
-ISR(TIMER1_OVF_vect) //interrupção do TIMER1
+// Rotina de interrupção enxterna do pino 2 INT0
+ISR(INT0_vect)
+{
+  if (deep_sleep == false && claro == true)
+    perguntou = true;
+  else
+  {
+    batteryStatus = 2;
+    deep_sleep = false;
+  }
+}
+
+//  Rotina de interrupção do timer1
+ISR(TIMER1_OVF_vect)
 {
   TCNT1 = 0xC2F7; // Renicia TIMER
   segundos++;
 
   if (segundos % 7 == 0)
   {
-    // lerSensores();
+    lerSensores();
     medirTensao();
   }
 
-  /*if (segundos % 5 == 0)
-    situacao = random(0, 12);*/
+  if (segundos % 5 == 0)
+    situacao = random(0, 12);
 
   if (segundos > 1000)
     segundos = 0;
 
-  /*Serial.print("situação: ");
-  Serial.print(situacao);
-  Serial.print("\tclaro: ");
-  Serial.print(claro);
-  Serial.print("\tLDR 1: ");
-  Serial.print(ldr1);
-  Serial.print("\tLDR 2: ");
-  Serial.print(ldr2);
-  Serial.print("\tLDR TOTAL: ");
-  Serial.print(ldrTotal);*/
-
-  if (segundos % 13 == 0)
+  if (segundos % 17 == 0)
   {
     Serial.print("tempo: ");
-    Serial.print(millis()/1000); 
-    Serial.print("\ttensão: ");
+    Serial.print(millis() / 1000);
+    Serial.print(" segundos\ttensão: ");
     Serial.print(tensao);
-    Serial.print("\t maior tensão: ");
-    Serial.println(maiorTensao);
+    Serial.print("\tmaior tensão: ");
+    Serial.print(maiorTensao);
+    Serial.print("\nsituação: ");
+    Serial.print(situacao);
+    Serial.print("\nclaro: ");
+    Serial.print(claro);
+    Serial.print("\tLDR 1: ");
+    Serial.print(ldr1);
+    Serial.print("\tLDR 2: ");
+    Serial.print(ldr2);
+    Serial.print("\tLDR TOTAL: ");
+    Serial.println(ldrTotal);
   }
 }
+
 
 void medirTensao()
 {
@@ -221,7 +238,7 @@ void medirTensao()
     batteryStatus = BATTERY_HIGH;
   else if (tensao < 3.1 && tensao >= 3)
     batteryStatus = BATTERY_LOW;
- /* else if (tensao < 3)
+  /* else if (tensao < 3)
     batteryStatus = BATTERY_DANGER;*/
 }
 
@@ -242,21 +259,7 @@ void sonoProfundo()
   display.limpar();
   display.show();
   display.displayOFF();
-  Serial.println("Dormindo...");
-  delay(100);
-  /*--- MODO SLEEP PARA REDUÇÃO DO CONSUMO DE ENERGIA ---*/
-  //Configura o tipo de sleep (power down)
-  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-
-  //Habilita a função sleep para que possa ser usada
-  sleep_enable();
-
-  //Aciona o modo sleep, para adormecer o microcontrolador
-  sleep_mode();
-
-  //Desativa o modo sleep
-  sleep_disable();
-
-  Serial.println("Acordando...");
+  mestreDosSonhos.dormirPorBateriaFraca();
   display.displayON();
+  display.reduzirBrilho(false);
 }

@@ -15,8 +15,6 @@ Display::Display(Adafruit_SSD1306 *d)
     }
 
     Serial.println("Display iniciado com sucesso!");
-    /* display->clearDisplay();
-    display->display(); */
 }
 
 /*
@@ -186,7 +184,7 @@ void Display::sonolenta()
 void Display::brava()
 {
     display->clearDisplay();
-    display->drawBitmap(0, 0, OLHOS_CERRADOS, 128, 64, WHITE);
+    display->drawBitmap(0, 0, OLHOS_BRAVA, 128, 64, WHITE);
     display->display();
     delay(2000);
 
