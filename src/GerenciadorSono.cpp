@@ -11,16 +11,16 @@ GerenciadorSono::~GerenciadorSono()
 void GerenciadorSono::dormirComDespertador()
 {
   Serial.println("Indo dormir com hora pra acordar com o despertador...");
-  delay(100);
   funcaoGerenciadorSono(20);
 }
 
 void GerenciadorSono::dormirPorBateriaFraca()
 {
-  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+  /* set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   sleep_enable();
   sleep_mode();
-  sleep_disable();
+  sleep_disable(); */
+  Serial.println("Hibernar feito urso...");
 }
 
 void GerenciadorSono::funcaoGerenciadorSono(unsigned long tempoSono)

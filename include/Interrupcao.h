@@ -2,6 +2,7 @@
 #define INTERRUPCAO_H
 
 #include <avr/interrupt.h>
+#include <Arduino.h>
 
 class Interrupcao
 {

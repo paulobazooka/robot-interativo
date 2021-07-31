@@ -5,6 +5,8 @@ Interrupcao::~Interrupcao(){};
 
 void Interrupcao::configurarInterrupcaoTimer()
 {
+    Serial.println("Configurando o timer1...");
+    delay(20);
     cli();                               // desabilita globalmente as interrupções
     TCCR1A = 0;                          //confira timer para operação normal pinos OC1A e OC1B desconectados
     TCCR1B = 0;                          //limpa registrador
@@ -28,6 +30,8 @@ void Interrupcao::desabilitarInterrupcaoTimer()
 
 void Interrupcao::configurarInterrupcaoExterna()
 {
+    Serial.println("Configurando a interrupção externa...");
+    delay(20);
     cli();                                // desabilita globalmente as interrupções
     DDRD &= ~(1 << DDD2);                 // Limpar o pino PD2, PD2 como entrada
     PORTD |= (1 << PORTD2);               // liga o pull-up
@@ -50,6 +54,8 @@ void Interrupcao::desabilitarInterrupcaoExterna()
 
 void Interrupcao::configurarInterrupcaoWatchDog()
 {
+    Serial.println("Configurando o watchdog...");
+    delay(20);
     cli();                          // desabilita globalmente as interrupções
     MCUSR = 0;                      // clear reset status
     WDTCSR |= 0b00011000;           // WDCE y WDE = 1 --> config mode
