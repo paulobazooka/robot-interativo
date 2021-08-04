@@ -5,6 +5,7 @@
 #include "Sensor.h"
 #include "Display.h"
 #include "Memoria.h"
+#include "Som.h"
 
 // Variáveis globais ----------------
 byte segundos = 0;
@@ -37,6 +38,8 @@ void setup()
   Serial.println("");
 
   configGeral();
+  somOFF();
+  
   Serial.print("Tempo decorrido até a bateria acabar: ");
   Serial.print(recuperarTempo(0));
   Serial.println(" segundos");
@@ -140,7 +143,7 @@ void loop()
       while (nivel_luz == ESCURO && estado_bateria == BATERIA_BOA)
       {
         dormindo();
-        if ((millis() - tempo_corrente) / 1000 >= 3600)
+        if ((millis() - tempo_corrente) / 1000 >= 15)
         {
           tempo_corrente = millis();
 

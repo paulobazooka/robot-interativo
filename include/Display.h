@@ -8,6 +8,7 @@
 
 #include "Olhos.h"
 #include "Bateria.h"
+#include "Som.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -17,7 +18,6 @@ unsigned int DELAY = 330;
 unsigned int _DELAY = 35;
 unsigned int _DELAY2 = 30;
 
-
 Adafruit_SSD1306 d(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Incializar o display
@@ -26,9 +26,8 @@ boolean inicializarDisplay()
     if (d.begin(SSD1306_SWITCHCAPVCC, 0x3C))
         return true;
     else
-        return false;    
+        return false;
 }
-
 
 /*
 *   Display ON
@@ -243,12 +242,14 @@ void feliz()
 /*
 *   SIM
 */
-void sim(){
+void sim()
+{
     for (byte i = 0; i < 5; i++)
     {
         d.clearDisplay();
         d.drawBitmap(0, 0, OLHOS_CENTRO, 128, 64, WHITE);
         d.display();
+        somON();
         delay(_DELAY);
 
         d.clearDisplay();
@@ -259,6 +260,7 @@ void sim(){
         d.clearDisplay();
         d.drawBitmap(0, 0, OLHOS_CENTRO, 128, 64, WHITE);
         d.display();
+        somOFF();
         delay(_DELAY);
 
         d.clearDisplay();
@@ -271,30 +273,34 @@ void sim(){
 /*
 *   NÃO
 */
-void nao(){
-     for (byte i = 0; i < 5; i++)
+void nao()
+{
+    for (byte i = 0; i < 5; i++)
     {
         d.clearDisplay();
         d.drawBitmap(0, 0, OLHOS_CENTRO, 128, 64, WHITE);
         d.display();
+        somON();
         delay(_DELAY2);
 
         d.clearDisplay();
         d.drawBitmap(15, 0, OLHOS_CENTRO, 128, 64, WHITE);
         d.display();
+        somOFF();
         delay(_DELAY2);
 
         d.clearDisplay();
         d.drawBitmap(0, 0, OLHOS_CENTRO, 128, 64, WHITE);
         d.display();
+        somON();
         delay(_DELAY2);
 
         d.clearDisplay();
         d.drawBitmap(-15, 0, OLHOS_CENTRO, 128, 64, WHITE);
         d.display();
-        delay(_DELAY2);        
+        somOFF();
+        delay(_DELAY2);
     }
 }
-
 
 #endif

@@ -26,6 +26,9 @@ void desabilitarInterrupcaoExterna()
 
 void configGeral()
 {
+
+    DDRD |= (1 << DDD4);                 // Limpar o pino PD4, PD4 como saida
+
     DDRD &= ~(1 << DDD2);                 // Limpar o pino PD2, PD2 como entrada
     PORTD |= (1 << PORTD2);               // liga o pull-up
     EICRA |= (1 << ISC01) | (0 << ISC00); // configura interrupção externa int 0 - FALLING
