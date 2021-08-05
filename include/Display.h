@@ -75,6 +75,33 @@ void reduzirBrilho(boolean reduzir)
     d.dim(reduzir);
 }
 
+
+void imprimirDadosHardware(int tempo, float tensao, byte nivel_luz, int tempo_bateria){
+    
+    d.clearDisplay();
+    d.display();
+    d.setTextColor(WHITE);
+    d.setTextSize(1);
+    d.setCursor(0,0);
+    
+    d.print("Tempo: ");
+    d.print(tempo);
+    d.println(" minutos");
+
+    d.print("Bateria: ");
+    d.print(tempo_bateria);
+    d.println(" minutos");
+
+    d.print("Tensao: ");
+    d.print(tensao);
+    d.println(" volts");
+
+    d.print("Luz: ");
+    d.println(nivel_luz);
+    
+    d.display();
+}
+
 /*
 *   Bateria fraca
 */

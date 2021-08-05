@@ -1,3 +1,10 @@
+/* =================================================================
+*   Projeto:    Robô interativo Daise
+*   Autor:      Paulo Sérgio do Nascimento
+*   Plataforma: Arduino Mini Pro 5V
+*   Ano:        2021
+*   Versão:     1.1
+* =================================================================*/
 #include <Arduino.h>
 
 #include "GerenciadorSono.h"
@@ -16,6 +23,11 @@ boolean perguntou = false;
 boolean deep_sleep = false;
 boolean display_inicializado = false;
 boolean salvou = false;
+unsigned long tempo_exibir_dados_hardware;
+unsigned int temp;
+
+// Funções --------------------------
+void exibirDadosHardware();
 
 // Setup Geral ------------------------
 void setup()
@@ -23,6 +35,8 @@ void setup()
   Serial.begin(9600);
 
   display_inicializado = inicializarDisplay();
+  configGeral();
+  somOFF();
 
   if (display_inicializado)
   {
@@ -37,13 +51,7 @@ void setup()
 
   Serial.println("");
 
-  configGeral();
-  somOFF();
-  
-  Serial.print("Tempo decorrido até a bateria acabar: ");
-  Serial.print(recuperarTempo(0));
-  Serial.println(" segundos");
-  Serial.println("");
+  temp = recuperarTempo(0);
 }
 
 void loop()
@@ -51,11 +59,8 @@ void loop()
 
   while (deep_sleep)
   {
-    for (size_t i = 0; i < 10; i++)
-    {
-      dormirPorBateriaFraca();
-    }
 
+    sonoProfundo(120); // Dormir por 120 segundos
     estado_bateria = leituraTensaoBateria();
 
     if (estado_bateria == BATERIA_BOA)
@@ -79,19 +84,32 @@ void loop()
       limpar();
       show();
       displayOFF();
-      salvarTempo(0, millis() / 1000);
+      salvarTempo(0, (millis()/1000)/60);
       salvou = true;
       deep_sleep = true;
     }
     break;
   case BATERIA_FRACA:
     bateriaFraca();
+     // Se passou o tempo passou de 3 segundos e o botão de interrupção continua pressionado
+        if ((millis() - tempo_exibir_dados_hardware) >= 3000 && (digitalRead(2) == LOW))
+        {
+          imprimirDadosHardware((millis()/1000)/60, tensaoBateria(), nivelLuz(), temp);
+          delay(10000);
+        }
     break;
   case BATERIA_BOA:
     if (nivel_luz == CLARO || nivel_luz == MUITO_CLARO)
     {
       if (display_inicializado)
       {
+        // Se passou o tempo passou de 3 segundos e o botão de interrupção continua pressionado
+        if ((millis() - tempo_exibir_dados_hardware) >= 3000 && (digitalRead(2) == LOW))
+        {
+          imprimirDadosHardware((millis()/1000)/60, tensaoBateria(), nivelLuz(), temp);
+          delay(10000);
+        }
+
         switch (situacao)
         {
         case 0:
@@ -130,7 +148,20 @@ void loop()
         case 11:
           piscada();
           break;
+        case 12:
+          acordada();
+          break;
+        case 13:
+          acordada();
+          break;
+        case 14:
+          acordada();
+          break;
+        case 15:
+          acordada();
+          break;
         default:
+         acordada();
           break;
         }
       }
@@ -143,11 +174,12 @@ void loop()
       while (nivel_luz == ESCURO && estado_bateria == BATERIA_BOA)
       {
         dormindo();
-        if ((millis() - tempo_corrente) / 1000 >= 15)
+        // Tempo dormindo até entrar em deep sleep...
+        if ((millis() - tempo_corrente) / 1000 >= (60 * 30)) // após meia hora...
         {
           tempo_corrente = millis();
 
-          if (nivel_luz == ESCURO)
+          if (nivel_luz == ESCURO) // verifica se está escuro ainda...
           {
             desabilitarInterrupcaoTimer();
             desabilitarInterrupcaoExterna();
@@ -156,14 +188,12 @@ void loop()
             displayOFF();
           }
 
-          while (nivel_luz == ESCURO)
+          while (nivel_luz == ESCURO) // Entra em deep sleep
           {
-            for (size_t i = 0; i < 10; i++)
-            {
-              dormirPorBateriaFraca();
-            }
 
-            nivel_luz = leituraNivelLuz();
+            sonoProfundo(60); // Dormir por 60 segundos
+
+            nivel_luz = leituraNivelLuz(); // medir nível de luz
 
             if (nivel_luz == CLARO || nivel_luz == MUITO_CLARO)
             {
@@ -192,25 +222,32 @@ void loop()
   }
 }
 
-/* 
-*  Rotina de interrupção do watchdog 
-*/
+/* =================================================================
+*
+* Rotina de interrupção WatchDog
+*
+* =================================================================*/
 ISR(WDT_vect)
 {
   wdt_reset(); // reset do WatchDog
 }
 
-/* 
-*  Rotina de interrupção enxterna do pino 2 INT0 
-*/
+/* =================================================================
+*
+* Rotina de interrupção enxterna do pino 2 INT0 
+*
+* =================================================================*/
 ISR(INT0_vect)
 {
+  tempo_exibir_dados_hardware = millis();
   perguntou = true;
 }
 
-/* 
-*  Rotina de interrupção do timer1
-*/
+/* =================================================================
+*
+* Rotina de interrupção Timer1 
+*
+* =================================================================*/
 ISR(TIMER1_OVF_vect)
 {
   TCNT1 = 0xC2F7; // Renicia TIMER
@@ -219,9 +256,9 @@ ISR(TIMER1_OVF_vect)
   {
     estado_bateria = leituraTensaoBateria();
     nivel_luz = leituraNivelLuz();
-    situacao = random(0, 12);
+    situacao = random(0, 16);
 
-    Serial.print("tempo: ");
+    /*Serial.print("tempo: ");
     Serial.print(millis() / 1000);
     Serial.print(" segundos\ntensão: ");
     Serial.print(tensaoBateria());
@@ -229,7 +266,7 @@ ISR(TIMER1_OVF_vect)
     Serial.print(situacao);
     Serial.print("\nLuz: ");
     Serial.println(nivelLuz());
-    Serial.print("\n");
+    Serial.print("\n");*/
   }
 
   if (segundos >= 60)

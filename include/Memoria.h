@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 
-void salvarTempo(byte posicao, unsigned long valor)
+void salvarTempo(byte posicao, unsigned int valor)
 {
 
     if (posicao < 200)
@@ -20,7 +20,7 @@ void salvarTempo(byte posicao, unsigned long valor)
     }
 }
 
-unsigned long recuperarTempo(byte posicao)
+unsigned int recuperarTempo(byte posicao)
 {
     if (posicao < 200)
     {
