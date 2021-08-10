@@ -23,7 +23,6 @@ const byte BATERIA_BOA = 2;
 
 void configurarLeituraAnalogica()
 {
-    Serial.println("Configurando a referência interna leitura analógica...");
     delay(20);
     analogReference(INTERNAL);
 }

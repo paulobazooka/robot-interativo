@@ -1,7 +1,6 @@
 #ifndef TELA_H
 #define TELA_H
 
-#include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -34,7 +33,6 @@ boolean inicializarDisplay()
 */
 void displayON()
 {
-    Serial.println("Ligar display");
     d.displayON();
 }
 
@@ -43,7 +41,6 @@ void displayON()
 */
 void displayOFF()
 {
-    Serial.println("Desligar display");
     d.displayOFF();
 }
 
@@ -52,7 +49,6 @@ void displayOFF()
 */
 void limpar()
 {
-    Serial.println("Limpar display");
     d.clearDisplay();
 }
 
@@ -61,7 +57,6 @@ void limpar()
 */
 void show()
 {
-    Serial.println("Show display");
     d.display();
 }
 
@@ -70,8 +65,6 @@ void show()
 */
 void reduzirBrilho(boolean reduzir)
 {
-    Serial.print("Reduzir brilho? ");
-    Serial.println(reduzir == 1 ? "SIM" : "NÃO");
     d.dim(reduzir);
 }
 

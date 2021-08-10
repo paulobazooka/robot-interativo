@@ -57,23 +57,6 @@ void setup()
 void loop()
 {
 
-  while (deep_sleep)
-  {
-
-    sonoProfundo(120); // Dormir por 120 segundos
-    estado_bateria = leituraTensaoBateria();
-
-    if (estado_bateria == BATERIA_BOA)
-    {
-      deep_sleep = false;
-      displayON();
-      limpar();
-      show();
-      habilitarInterrupcaoTimer();
-      habilitarInterrupcaoExterna();
-    }
-  }
-
   switch (estado_bateria)
   {
   case BATERIA_DESCARREGADA:
@@ -84,19 +67,30 @@ void loop()
       limpar();
       show();
       displayOFF();
-      salvarTempo(0, (millis()/1000)/60);
+      salvarTempo(0, (millis() / 1000) / 60);
       salvou = true;
-      deep_sleep = true;
+
+      while (estado_bateria == BATERIA_DESCARREGADA)
+      {
+        sonoProfundo(120); // Dormir por 120 segundos
+        estado_bateria = leituraTensaoBateria();
+      }
+
+      displayON();
+      limpar();
+      show();
+      habilitarInterrupcaoTimer();
+      habilitarInterrupcaoExterna();
     }
     break;
   case BATERIA_FRACA:
     bateriaFraca();
-     // Se passou o tempo passou de 3 segundos e o botão de interrupção continua pressionado
-        if ((millis() - tempo_exibir_dados_hardware) >= 3000 && (digitalRead(2) == LOW))
-        {
-          imprimirDadosHardware((millis()/1000)/60, tensaoBateria(), nivelLuz(), temp);
-          delay(10000);
-        }
+    // Se passou o tempo passou de 3 segundos e o botão de interrupção continua pressionado
+    if ((millis() - tempo_exibir_dados_hardware) >= 3000 && (digitalRead(2) == LOW))
+    {
+      imprimirDadosHardware((millis() / 1000) / 60, tensaoBateria(), nivelLuz(), temp);
+      delay(10000);
+    }
     break;
   case BATERIA_BOA:
     if (nivel_luz == CLARO || nivel_luz == MUITO_CLARO)
@@ -106,7 +100,7 @@ void loop()
         // Se passou o tempo passou de 3 segundos e o botão de interrupção continua pressionado
         if ((millis() - tempo_exibir_dados_hardware) >= 3000 && (digitalRead(2) == LOW))
         {
-          imprimirDadosHardware((millis()/1000)/60, tensaoBateria(), nivelLuz(), temp);
+          imprimirDadosHardware((millis() / 1000) / 60, tensaoBateria(), nivelLuz(), temp);
           delay(10000);
         }
 
@@ -161,7 +155,7 @@ void loop()
           acordada();
           break;
         default:
-         acordada();
+          acordada();
           break;
         }
       }
@@ -177,8 +171,6 @@ void loop()
         // Tempo dormindo até entrar em deep sleep...
         if ((millis() - tempo_corrente) / 1000 >= (60 * 30)) // após meia hora...
         {
-          tempo_corrente = millis();
-
           if (nivel_luz == ESCURO) // verifica se está escuro ainda...
           {
             desabilitarInterrupcaoTimer();
@@ -205,6 +197,8 @@ void loop()
               habilitarInterrupcaoExterna();
             }
           }
+
+          perguntou = false;
         }
       }
       sonolenta();

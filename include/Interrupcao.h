@@ -1,7 +1,6 @@
 #ifndef INTERRUPCAO_H
 #define INTERRUPCAO_H
 
-#include <Arduino.h>
 #include <avr/interrupt.h>
 
 void habilitarInterrupcaoTimer()
@@ -27,7 +26,7 @@ void desabilitarInterrupcaoExterna()
 void configGeral()
 {
 
-    DDRD |= (1 << DDD4);                 // Limpar o pino PD4, PD4 como saida
+    DDRD |= (1 << DDD4); // Limpar o pino PD4, PD4 como saida
 
     DDRD &= ~(1 << DDD2);                 // Limpar o pino PD2, PD2 como entrada
     PORTD |= (1 << PORTD2);               // liga o pull-up
@@ -39,11 +38,6 @@ void configGeral()
     TCCR1B |= (1 << CS10) | (1 << CS12); // configura prescaler para 1024: CS12 = 1 e CS10 = 1
     TCNT1 = 0xC2F7;                      // incia timer com valor para que estouro ocorra em 1 segundo 65536-(16MHz/1024/1Hz) = 49911 = 0xC2F7
     TIMSK1 |= (1 << TOIE1);              // habilita a interrupção do TIMER1
-
-    MCUSR = 0;                      // clear reset status
-    WDTCSR |= 0b00011000;           // WDCE y WDE = 1 --> config mode
-    WDTCSR = 0b01000000 | 0b100001; // set WDIE (interrupt mode enabled), clear WDE (reset mode disabled) and set interval to 8 seconds
-    sei();                          // habilita globalmente as interrupções
 
     analogReference(INTERNAL);
 }
