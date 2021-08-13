@@ -68,30 +68,37 @@ void reduzirBrilho(boolean reduzir)
     d.dim(reduzir);
 }
 
+void imprimirDadosHardware(int tempo, float tensao, byte nivel_luz)
+{
 
-void imprimirDadosHardware(int tempo, float tensao, byte nivel_luz, int tempo_bateria){
-    
+    unsigned int hora = tempo / 60;
+    byte minutos = tempo % 60;
+
     d.clearDisplay();
     d.display();
     d.setTextColor(WHITE);
     d.setTextSize(1);
-    d.setCursor(0,0);
-    
-    d.print("Tempo: ");
-    d.print(tempo);
-    d.println(" minutos");
+    d.setCursor(0, 0);
 
-    d.print("Bateria: ");
-    d.print(tempo_bateria);
-    d.println(" minutos");
+    d.println("-- DADOS HARDWARE --\n");
 
-    d.print("Tensao: ");
+    d.print("TEMPO: ");
+    if (hora < 9)
+        d.print("0");
+    d.print(hora);
+    d.print(":");
+    if (minutos < 9)
+        d.print("0");
+    d.println(minutos);
+
+    d.print("BATERIA: ");
     d.print(tensao);
-    d.println(" volts");
+    d.println(" V");
 
-    d.print("Luz: ");
+    d.print("LUZ: ");
     d.println(nivel_luz);
-    
+
+    d.println("\n--------------------");
     d.display();
 }
 
@@ -218,10 +225,26 @@ void brava()
     d.clearDisplay();
     d.drawBitmap(0, 0, OLHOS_BRAVA, 128, 64, WHITE);
     d.display();
-    delay(2000);
+    delay(2300);
+
+    d.clearDisplay();
+    d.drawBitmap(0, 0, OLHOS_SEMI_CERRADOS, 128, 64, WHITE);
+    d.display();
+
+    d.clearDisplay();
+    d.drawBitmap(0, 0, OLHOS_CERRADOS, 128, 64, WHITE);
+    d.display();
 
     d.clearDisplay();
     d.drawBitmap(0, 0, OLHOS_FECHADOS, 128, 64, WHITE);
+    d.display();
+
+    d.clearDisplay();
+    d.drawBitmap(0, 0, OLHOS_CERRADOS, 128, 64, WHITE);
+    d.display();
+
+    d.clearDisplay();
+    d.drawBitmap(0, 0, OLHOS_SEMI_CERRADOS, 128, 64, WHITE);
     d.display();
 }
 

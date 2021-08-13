@@ -22,12 +22,7 @@ byte estado_bateria = 2;
 boolean perguntou = false;
 boolean deep_sleep = false;
 boolean display_inicializado = false;
-boolean salvou = false;
 unsigned long tempo_exibir_dados_hardware;
-unsigned int temp;
-
-// Funções --------------------------
-void exibirDadosHardware();
 
 // Setup Geral ------------------------
 void setup()
@@ -50,8 +45,6 @@ void setup()
     Serial.println("Falha ao inicializar o display");
 
   Serial.println("");
-
-  temp = recuperarTempo(0);
 }
 
 void loop()
@@ -60,38 +53,35 @@ void loop()
   switch (estado_bateria)
   {
   case BATERIA_DESCARREGADA:
-    if (salvou == false)
+    desabilitarInterrupcaoTimer();
+    desabilitarInterrupcaoExterna();
+    limpar();
+    show();
+    displayOFF();
+
+    while (estado_bateria == BATERIA_DESCARREGADA)
     {
-      desabilitarInterrupcaoTimer();
-      desabilitarInterrupcaoExterna();
-      limpar();
-      show();
-      displayOFF();
-      salvarTempo(0, (millis() / 1000) / 60);
-      salvou = true;
-
-      while (estado_bateria == BATERIA_DESCARREGADA)
-      {
-        sonoProfundo(120); // Dormir por 120 segundos
-        estado_bateria = leituraTensaoBateria();
-      }
-
-      displayON();
-      limpar();
-      show();
-      habilitarInterrupcaoTimer();
-      habilitarInterrupcaoExterna();
+      sonoProfundo(120); // Dormir por 120 segundos
+      estado_bateria = leituraTensaoBateria();
     }
+
+    displayON();
+    limpar();
+    show();
+    habilitarInterrupcaoTimer();
+    habilitarInterrupcaoExterna();
     break;
+
   case BATERIA_FRACA:
     bateriaFraca();
     // Se passou o tempo passou de 3 segundos e o botão de interrupção continua pressionado
     if ((millis() - tempo_exibir_dados_hardware) >= 3000 && (digitalRead(2) == LOW))
     {
-      imprimirDadosHardware((millis() / 1000) / 60, tensaoBateria(), nivelLuz(), temp);
+      imprimirDadosHardware((millis() / 1000) / 60, tensaoBateria(), nivelLuz());
       delay(10000);
     }
     break;
+
   case BATERIA_BOA:
     if (nivel_luz == CLARO || nivel_luz == MUITO_CLARO)
     {
@@ -100,59 +90,35 @@ void loop()
         // Se passou o tempo passou de 3 segundos e o botão de interrupção continua pressionado
         if ((millis() - tempo_exibir_dados_hardware) >= 3000 && (digitalRead(2) == LOW))
         {
-          imprimirDadosHardware((millis() / 1000) / 60, tensaoBateria(), nivelLuz(), temp);
+          imprimirDadosHardware((millis() / 1000) / 60, tensaoBateria(), nivelLuz());
           delay(10000);
         }
 
         switch (situacao)
         {
         case 0:
-          acordada();
+          feliz();
           break;
         case 1:
-          acordada();
+          feliz();
           break;
         case 2:
-          acordada();
+          feliz();
           break;
         case 3:
-          acordada();
+          desconfiada();
           break;
         case 4:
-          feliz();
+          desconfiada();
           break;
         case 5:
-          feliz();
-          break;
-        case 6:
-          feliz();
-          break;
-        case 7:
-          desconfiada();
-          break;
-        case 8:
-          desconfiada();
-          break;
-        case 9:
           brava();
           break;
-        case 10:
+        case 6:
           piscada();
           break;
-        case 11:
+        case 7:
           piscada();
-          break;
-        case 12:
-          acordada();
-          break;
-        case 13:
-          acordada();
-          break;
-        case 14:
-          acordada();
-          break;
-        case 15:
-          acordada();
           break;
         default:
           acordada();
@@ -183,8 +149,7 @@ void loop()
           while (nivel_luz == ESCURO) // Entra em deep sleep
           {
 
-            sonoProfundo(60); // Dormir por 60 segundos
-
+            sonoProfundo(60);              // Dormir por 60 segundos
             nivel_luz = leituraNivelLuz(); // medir nível de luz
 
             if (nivel_luz == CLARO || nivel_luz == MUITO_CLARO)
@@ -250,17 +215,7 @@ ISR(TIMER1_OVF_vect)
   {
     estado_bateria = leituraTensaoBateria();
     nivel_luz = leituraNivelLuz();
-    situacao = random(0, 16);
-
-    /*Serial.print("tempo: ");
-    Serial.print(millis() / 1000);
-    Serial.print(" segundos\ntensão: ");
-    Serial.print(tensaoBateria());
-    Serial.print("\nsituação: ");
-    Serial.print(situacao);
-    Serial.print("\nLuz: ");
-    Serial.println(nivelLuz());
-    Serial.print("\n");*/
+    situacao = random(0, 21);
   }
 
   if (segundos >= 60)

@@ -33,10 +33,10 @@ byte leituraNivelLuz()
     ldr2 = analogRead(LDR2);
     ldrTotal = (ldr1 + ldr2) / 2;
 
-    if (ldrTotal <= 10)
+    if (ldrTotal <= 12)
         return ESCURO;
 
-    if (ldrTotal > 10 && ldrTotal <= 30)
+    if (ldrTotal > 12 && ldrTotal <= 30)
         return CLARO;
 
     return MUITO_CLARO;
@@ -54,10 +54,10 @@ byte leituraTensaoBateria()
 
     tensao = (((total / NUMERO_AMOSTRAS_TENSAO) * 6.074) / 1024);
 
-    if (tensao >= 3.1)
+    if (tensao >= 3.2)
         return BATERIA_BOA;
 
-    if (tensao < 3.1 && tensao >= 3)
+    if (tensao < 3.2 && tensao >= 3)
         return BATERIA_FRACA;
 
     return BATERIA_DESCARREGADA;
