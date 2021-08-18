@@ -33,10 +33,10 @@ byte leituraNivelLuz()
     ldr2 = analogRead(LDR2);
     ldrTotal = (ldr1 + ldr2) / 2;
 
-    if (ldrTotal <= 12)
+    if (ldrTotal <= 20)
         return ESCURO;
 
-    if (ldrTotal > 12 && ldrTotal <= 30)
+    if (ldrTotal > 20 && ldrTotal <= 31)
         return CLARO;
 
     return MUITO_CLARO;

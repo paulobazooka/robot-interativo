@@ -59,12 +59,13 @@ void loop()
     show();
     displayOFF();
 
-    while (estado_bateria == BATERIA_DESCARREGADA)
+    while (estado_bateria != BATERIA_BOA)
     {
-      sonoProfundo(120); // Dormir por 120 segundos
+      sonoProfundo(120);
       estado_bateria = leituraTensaoBateria();
     }
 
+    perguntou = false;
     displayON();
     limpar();
     show();
