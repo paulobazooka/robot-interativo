@@ -10,4 +10,4 @@ Projeto de robo interativo
 - Bateria de lítio/lipo [Quanto maior a capacidade (mAh), melhor]
 
 # Vídeo
-- [!youtube](https://www.youtube.com/watch?v=caxrFo8pGkM)
+- [youtube](https://www.youtube.com/watch?v=caxrFo8pGkM)
