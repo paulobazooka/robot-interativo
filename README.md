@@ -8,3 +8,6 @@ Projeto de robo interativo
 - Chave táctil
 - Placa carregadora de bateria lítio
 - Bateria de lítio/lipo [Quanto maior a capacidade (mAh), melhor]
+
+# Vídeo
+- [!youtube](https://www.youtube.com/watch?v=caxrFo8pGkM)
